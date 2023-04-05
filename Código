@@ -1,0 +1,173 @@
+int ledum = 8;
+int leddois = 7;
+int ledtres = 6;
+int ledquatro = 5;
+int ledcinco = 4;
+int ledseis = 3;
+int ledsete = 2;
+int botaoum = 10;
+int botaodois = 11;
+int botaoinicio = 13;
+int buzzer = 9;
+int number = 0;
+byte cont = 0;
+bool iniciado = false;//Começar com a sentença falsa
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(buzzer, OUTPUT);
+  pinMode(ledum, OUTPUT);
+  pinMode(leddois, OUTPUT);
+  pinMode(ledtres, OUTPUT);
+  pinMode(ledquatro, OUTPUT);
+  pinMode(ledcinco, OUTPUT);
+  pinMode(ledseis, OUTPUT);
+  pinMode(ledsete, OUTPUT);
+  pinMode(botaoum, INPUT_PULLUP);
+  pinMode(botaodois, INPUT_PULLUP);
+  pinMode(botaoinicio, INPUT_PULLUP);
+}
+
+void loop() {
+  while(digitalRead(botaoinicio) == LOW){//se o botão for precionado a animação de início
+  animacao();//variável de animação do início
+  apagaLeds();
+  }
+  if(iniciado) {//Se "iniciado" for verdadeiro o jogo inicia
+    if(digitalRead(botaoum) == LOW){//Se o botão um for apertado é adionado +1 ao contador
+      number +=1;
+      Serial.print(">> numeracao ");//Não é obrigatório, mas colocamos para compreender se o contador estava funcionando corretamente
+      Serial.println(number);
+      while (digitalRead(botaoum) == LOW) {}//serve para estabilizar a contagem de cliques
+    }
+
+    if(digitalRead(botaodois) == LOW){//Se o botão dois for apertado é adicionado -1 ao contador
+      number -=1;
+      Serial.print("<< numeracao ");////Não é obrigatório, mas colocamos para compreender se o contador estava funcionando corretamente
+      Serial.println(number);
+      while (digitalRead(botaodois) == LOW) {}//estabilizar
+    }
+
+    if(number >= -2 && number <= 2){//Nesse sistema o valor de "number influencia em qual led será acesa, logo se o valor for 0 a led do meio ascende, caso seja 4 a led cinco ascende e assim por diante
+      apagaLeds();
+      digitalWrite(ledquatro, HIGH);
+    }else if(number >= 3 && number <= 5 ){
+      apagaLeds();
+      digitalWrite(ledcinco, HIGH);
+    }else if(number >= 6 && number <= 8){
+      apagaLeds();
+      digitalWrite(ledseis, HIGH);
+    }else if(number == 9 ){
+      apagaLeds();
+      digitalWrite(ledsete, HIGH);
+      ganhouDireita();
+    }else if(number >= -5 && number <= -3){
+      apagaLeds();
+      digitalWrite(ledtres, HIGH);
+    }else if(number >= -8 && number <= -6){
+      apagaLeds();
+      digitalWrite(leddois, HIGH);
+    }else if(number == -9){
+      apagaLeds();
+      digitalWrite(ledum, HIGH);//final da condição
+      
+      ganhouEsquerda();//variável que faz uma animação ao final do jogo e o reinicia
+    }
+  } else {
+  	while(digitalRead(botaoinicio) == HIGH){}
+    iniciado = true;
+  }
+  
+}
+void animacao() {
+  digitalWrite(ledum, HIGH);
+    digitalWrite(ledsete, HIGH);
+    tone(buzzer,262);//parada
+    delay(1000);
+    noTone(buzzer);//parar som
+    digitalWrite(leddois, HIGH);
+    digitalWrite(ledseis, HIGH);
+    tone(buzzer,349);
+    delay(1000);
+    noTone(buzzer);
+    digitalWrite(ledtres, HIGH);
+    digitalWrite(ledcinco, HIGH);
+    tone(buzzer,462);
+    delay(1000);
+    noTone(buzzer);
+    tone(buzzer,850);
+    digitalWrite(ledquatro, HIGH);
+    delay(1000);
+    noTone(buzzer);
+    apagaLeds();
+}
+
+void apagaLeds() {
+  noTone(buzzer);
+  digitalWrite(ledum, LOW);
+  digitalWrite(leddois, LOW);
+  digitalWrite(ledtres, LOW);
+  digitalWrite(ledquatro, LOW);
+  digitalWrite(ledcinco, LOW);
+  digitalWrite(ledseis, LOW);
+  digitalWrite(ledsete, LOW);
+}
+void acendeLeds(){
+  digitalWrite(ledum, HIGH);
+  digitalWrite(leddois, HIGH);
+  digitalWrite(ledtres, HIGH);
+  digitalWrite(ledquatro, HIGH);
+  digitalWrite(ledcinco, HIGH);
+  digitalWrite(ledseis, HIGH);
+  digitalWrite(ledsete, HIGH);
+}
+
+void ganhouDireita() {
+  digitalWrite(ledum, LOW);
+  digitalWrite(ledsete, HIGH);
+  delay(700);
+  digitalWrite(ledsete, LOW);
+  delay(500);
+  digitalWrite(ledsete, HIGH);
+  delay(700);
+  digitalWrite(ledsete, LOW);
+  delay(500);
+  digitalWrite(ledsete, HIGH);
+  delay(700);
+  digitalWrite(ledsete, LOW);
+  delay(500);
+  digitalWrite(ledsete, HIGH);
+  acendeLeds();
+  delay(1000);
+  apagaLeds();
+  delay(700);
+  
+  apagaLeds();
+  number = 0;
+  iniciado = false;
+}
+void ganhouEsquerda(){
+  digitalWrite(ledsete, LOW);
+  digitalWrite(ledum, HIGH);
+  delay(700);
+  digitalWrite(ledum, LOW);
+  delay(500);
+  digitalWrite(ledum, HIGH);
+  delay(700);
+  digitalWrite(ledum, LOW);
+  delay(500);
+  digitalWrite(ledum, HIGH);
+  delay(700);
+  digitalWrite(ledum, LOW);
+  delay(500);
+  digitalWrite(ledum, HIGH);
+  acendeLeds();
+  delay(1000);
+  apagaLeds();
+  delay(700);
+  
+  apagaLeds();
+  number = 0;
+  iniciado = false;
+  }
+
